@@ -1,4 +1,3 @@
----
 _schema-version: '3.1'
 ID: cap_java_demo
 version: 1.0.0-SNAPSHOT
@@ -24,4 +23,26 @@ modules:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
           srv-url: ${default-url}
-    requires: []
+    requires:
+      - name: cap_java_demo-db
+
+  - name: cap_java_demo-db-deployer
+    type: hdb
+    path: db
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: custom
+      commands:
+        - npm run build
+    requires:
+      - name: cap_java_demo-db
+
+resources:
+  - name: cap_java_demo-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+      config:
+       database_id: 55c27bc7-1ada-43a1-b22f-02794d7e5967
