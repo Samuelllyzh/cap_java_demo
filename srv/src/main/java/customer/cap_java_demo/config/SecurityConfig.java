@@ -11,24 +11,24 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
-        http.formLogin(login -> login
-                .loginProcessingUrl("/login")
-                .loginPage("/login")
-                .defaultSuccessUrl("/")
-                .failureUrl("/login?error")
-                .permitAll()).logout(logout -> logout
-                        .logoutSuccessUrl("/"))
-                .authorizeHttpRequests(authz -> authz
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http)
+                        throws Exception {
+                http.formLogin(login -> login
+                                .loginProcessingUrl("/login")
+                                .loginPage("/login")
+                                .defaultSuccessUrl("/")
+                                .failureUrl("/login?error")
+                                .permitAll()).logout(logout -> logout
+                                                .logoutSuccessUrl("/"))
+                                .authorizeHttpRequests(authz -> authz
 
-                        // URLごとの認可設定記述開始
+                                                // URLごとの認可設定記述開始
 
-                        .anyRequest().permitAll()
-                // 他のURLはログイン後のみアクセス可能
+                                                .anyRequest().permitAll()
+                                // 他のURLはログイン後のみアクセス可能
 
-                );
-        return http.build();
-    }
+                                );
+                return http.build();
+        }
 }
