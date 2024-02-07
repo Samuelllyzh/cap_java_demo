@@ -1,6 +1,8 @@
 package customer.cap_java_demo.handlers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -20,6 +22,7 @@ import com.sap.cds.services.persistence.PersistenceService;
 
 import cds.gen.catalogservice.CatalogService_;
 import cds.gen.catalogservice.Books;
+import cds.gen.catalogservice.AddBooks_;
 
 @Component
 @ServiceName(CatalogService_.CDS_NAME)
@@ -27,7 +30,11 @@ public class CatalogServiceHandler implements EventHandler {
 
 	Result result;
 	CqnService service;
-	PersistenceService db;
+	private final PersistenceService db;
+
+	CatalogServiceHandler(PersistenceService db){
+		this.db = db;
+	}
 
 	@After(event = CqnService.EVENT_READ)
 	public void discountBooks(Stream<Books> books) {
@@ -36,15 +43,21 @@ public class CatalogServiceHandler implements EventHandler {
 		.forEach(b -> b.setTitle(b.getTitle() + " (discounted)"));
 	}
 
-	@On(event = CqnService.EVENT_CREATE, entity = "CatalogService.addBooks")
-	public void addBooks() {
+	@On(event = {CqnService.EVENT_CREATE}, entity = AddBooks_.CDS_NAME)
+	public void addBooks(EventContext reqContext) {
 		try {
+
+			reqContext.getParameterInfo().getQueryParams();
+			System.out.println(reqContext.getParameterInfo().getQueryParams());
 			Map<String, Object> bookInfo = new HashMap<>();
-			bookInfo.put("title", "111");
+			bookInfo.put("title", "10");
 			bookInfo.put("stock", 111);
 	
 			CqnInsert insert = Insert.into("addBooks").entry(bookInfo);
+			List<Map<String, Object>> resultList = new ArrayList<>();
+			resultList = insert.entries();
 			result = db.run(insert);
+			System.out.println(result);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
