@@ -77,5 +77,5 @@ resources:
       service-plan: application
       path: ./xs-security.json
       config:
-        xsappname: cap_java_demo-${org}-${space}
+        xsappname: cap_java_demo-xsapp
         tenant-mode: dedicated
