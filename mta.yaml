@@ -25,6 +25,10 @@ modules:
           srv-url: ${default-url}
     requires:
       - name: cap_java_demo-db
+      - name: cap_java_demo-auth
+      - name: app-api
+        properties:
+          CDS_MULTITENANCY_APPUI_URL: ~{url}
 
   - name: cap_java_demo-db-deployer
     type: hdb
@@ -38,6 +42,26 @@ modules:
     requires:
       - name: cap_java_demo-db
 
+  - name: cap_java_demo
+    type: approuter.nodejs
+    path: app/
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
+          forwardAuthToken: true
+      - name: cap_java_demo-auth
+    provides:
+      - name: app-api
+        properties:
+          url: ${default-url}
+
 resources:
   - name: cap_java_demo-db
     type: com.sap.xs.hdi-container
@@ -45,4 +69,13 @@ resources:
       service: hana
       service-plan: hdi-shared
       config:
-       database_id: 55c27bc7-1ada-43a1-b22f-02794d7e5967
+        database_id: 55c27bc7-1ada-43a1-b22f-02794d7e5967
+  - name: cap_java_demo-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: cap_java_demo-${org}-${space}
+        tenant-mode: dedicated
