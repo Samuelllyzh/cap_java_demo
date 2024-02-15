@@ -3,5 +3,7 @@
 spring:
   config.activate.on-profile: default
   sql.init.schema-locations: classpath:schema-h2.sql
-cds:
-  datasource.auto-config.enabled: false
+  cds:
+    datasource:
+      binding: cap_java_demo-db
+    
